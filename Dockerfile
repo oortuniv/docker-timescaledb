@@ -9,7 +9,6 @@ ENV POSTGRES_PASSWORD=postgres
 RUN mkdir -p ${PGDATA}
 RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
 WORKDIR ${TS_HOME}
-VOLUME ["${TS_HOME}"]
 ########################
 
 # install timescaledb
@@ -28,3 +27,4 @@ ADD ./docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 
 USER postgres
 EXPOSE 5432
+VOLUME ["${TS_HOME}"]
