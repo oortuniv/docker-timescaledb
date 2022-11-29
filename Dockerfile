@@ -1,35 +1,28 @@
-FROM rust:alpine3.16
+FROM postgres:14.6-bullseye
 
-ENV PG_DATA=/woongzz0110/timescaledb/data
+ENV PGDATA=/woongzz0110/timescaledb/data
+ENV POSTGRES_PASSWORD=postgres
 
-# install postgresql
-RUN apk update
-RUN apk --no-cache add bash postgresql14 postgresql-dev postgresql-libs pkgconfig
-ADD ./src/run_postgres.sh /src/run_postgres.sh
-RUN chmod +x /src/run_postgres.sh && /src/run_postgres.sh
+RUN apt update && apt install -y sudo wget lsb-release
+
+# make workdir
+WORKDIR /woongzz0110/timescaledb/data
+RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
+VOLUME ["/woongzz0110/timescaledb"]
 ########################
 
 # install timescaledb
-RUN apk --no-cache add git gcc cmake build-base
-RUN git clone -b 2.5.1 https://github.com/timescale/timescaledb.git /clone/timescaledb
-RUN cd /clone/timescaledb ./bootstrap
-RUN cd /clone/timescaledb/build && make && make install
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+RUN /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+RUN echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | sudo tee /etc/apt/sources.list.d/timescaledb.list
+RUN wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | sudo apt-key add -
+RUN apt update && apt -y install timescaledb-2-2.8.1-postgresql-14 timescaledb-toolkit-postgresql-14
 ########################
 
-# install timescaledb-toolkit
-RUN apk --no-cache add make openssl-dev cargo
-RUN cargo install --version '=0.5.4' --force cargo-pgx
-RUN cargo pgx init --pg14 pg_config
-RUN git clone https://github.com/timescale/timescaledb-toolkit /clone/timescaledb-toolkit
-RUN cd /clone/timescaledb-toolkit/extension && cargo pgx install --release
-RUN cd /clone/timescaledb-toolkit/extension && cargo run --manifest-path ../tools/post-install/Cargo.toml -- pg_config
+# init db
+RUN echo "shared_preload_libraries='pg_stat_statements,timescaledb'" >> /usr/share/postgresql/14/postgresql.conf.sample
+ADD ./docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 ########################
 
-# make workdir
-WORKDIR /woongzz0110/timescaledb
-VOLUME [ "/woongzz0110/timescaledb"]
-RUN rm -rf /clone
-########################
-
-USER 1001
+USER postgres
 EXPOSE 5432
