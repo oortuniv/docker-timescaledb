@@ -5,12 +5,6 @@ ENV TS_HOME=/opt/woongzz0110/timescaledb
 ENV PGDATA=${TS_HOME}/data
 ENV POSTGRES_PASSWORD=postgres
 
-# make workdir
-RUN mkdir -p ${PGDATA}
-RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
-WORKDIR ${TS_HOME}
-########################
-
 # install timescaledb
 RUN apt update && apt install -y sudo wget lsb-release
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
@@ -25,6 +19,13 @@ RUN echo "shared_preload_libraries='pg_stat_statements,timescaledb'" >> /usr/sha
 ADD ./docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 ########################
 
-USER postgres
+# make workdir
+RUN groupadd -g 1100 woongzz0110 && useradd --no-create-home -u 1100 -g 1100 woongzz0110
+RUN mkdir -p ${PGDATA}
+RUN chown -R woongzz0110:woongzz0110 ${TS_HOME} /var/run/postgresql
+WORKDIR ${TS_HOME}
+########################
+
+USER woongzz0110
 EXPOSE 5432
 VOLUME ["${TS_HOME}"]
