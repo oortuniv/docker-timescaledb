@@ -1,14 +1,14 @@
 FROM postgres:14.6-bullseye
 
-ENV PGDATA=/woongzz0110/timescaledb/data
+ENV PGDATA=/opt/woongzz0110/timescaledb/data
 ENV POSTGRES_PASSWORD=postgres
 
 RUN apt update && apt install -y sudo wget lsb-release
 
 # make workdir
-WORKDIR /woongzz0110/timescaledb/data
+WORKDIR ${PGDATA}
 RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
-VOLUME ["/woongzz0110/timescaledb"]
+VOLUME ["/opt/woongzz0110/timescaledb"]
 ########################
 
 # install timescaledb
