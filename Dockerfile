@@ -1,17 +1,19 @@
 FROM postgres:14.6-bullseye
 
-ENV PGDATA=/opt/woongzz0110/timescaledb/data
+ENV TS_HOME=/opt/woongzz0110/timescaledb
+
+ENV PGDATA=${TS_HOME}/data
 ENV POSTGRES_PASSWORD=postgres
 
-RUN apt update && apt install -y sudo wget lsb-release
-
 # make workdir
-WORKDIR ${PGDATA}
-RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
-VOLUME ["/opt/woongzz0110/timescaledb"]
+RUN mkdir -p ${PGDATA}
+RUN chown -R postgres:postgres ${TS_HOME} ${PGDATA} ${PGLOG} ${PGROOT}
+WORKDIR ${TS_HOME}
+VOLUME ["${TS_HOME}"]
 ########################
 
 # install timescaledb
+RUN apt update && apt install -y sudo wget lsb-release
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 RUN /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
 RUN echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | sudo tee /etc/apt/sources.list.d/timescaledb.list
