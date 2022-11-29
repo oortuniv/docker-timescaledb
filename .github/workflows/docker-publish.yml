@@ -24,7 +24,7 @@ jobs:
       run: |
         docker build -t $REPOSITORY .
         docker tag $REPOSITORY:latest $REPOSITORY:$GITHUB_REF_NAME
-        docker push $REPOSITORY:$GITHUB_REF_NAME
+        docker push --all-tags
 
     - name: uplaod Dockerhub readme
       uses: peter-evans/dockerhub-description@v3
