@@ -7,7 +7,7 @@ ENV POSTGRES_PASSWORD=postgres
 
 # make workdir
 RUN mkdir -p ${PGDATA}
-RUN chown -R postgres:postgres ${TS_HOME} ${PGDATA} ${PGLOG} ${PGROOT}
+RUN chown -R postgres:postgres ${PGDATA} ${PGLOG} ${PGROOT}
 WORKDIR ${TS_HOME}
 VOLUME ["${TS_HOME}"]
 ########################
