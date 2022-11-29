@@ -33,4 +33,4 @@ jobs:
         password: ${{secrets.DOCKERHUB_TOKEN}}
         repository: woongzz0110/timescaledb
         readme-filepath: README.md
-        short-description: ${{github.event.repository.description}}
+        short-description: timescaledb 폼 미쳤다
