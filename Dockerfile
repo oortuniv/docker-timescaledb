@@ -1,6 +1,6 @@
 FROM postgres:14.6-bullseye
 
-ENV TS_HOME=/opt/woongzz0110/timescaledb
+ENV TS_HOME=/opt/oortuniv/timescaledb
 
 ENV PGDATA=${TS_HOME}/data
 ENV POSTGRES_PASSWORD=postgres
@@ -20,12 +20,12 @@ ADD ./docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 ########################
 
 # make workdir
-RUN groupadd -g 1100 woongzz0110 && useradd --no-create-home -u 1100 -g 1100 woongzz0110
+RUN groupadd -g 1100 oortuniv && useradd --no-create-home -u 1100 -g 1100 oortuniv
 RUN mkdir -p ${PGDATA}
-RUN chown -R woongzz0110:woongzz0110 ${TS_HOME} /var/run/postgresql
+RUN chown -R oortuniv:oortuniv ${TS_HOME} /var/run/postgresql
 WORKDIR ${TS_HOME}
 ########################
 
-USER woongzz0110
+USER oortuniv
 EXPOSE 5432
 VOLUME ["${TS_HOME}"]
