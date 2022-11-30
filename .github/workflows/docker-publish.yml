@@ -20,7 +20,7 @@ jobs:
     
     - name: build and release to DockerHub
       env:
-        REPOSITORY: woongzz0110/timescaledb
+        REPOSITORY: oortuniv/timescaledb
       run: |
         docker build -t $REPOSITORY .
         docker tag $REPOSITORY:latest $REPOSITORY:$GITHUB_REF_NAME
@@ -31,6 +31,6 @@ jobs:
       with:
         username: ${{secrets.DOCKERHUB_USERNAME}}
         password: ${{secrets.DOCKERHUB_TOKEN}}
-        repository: woongzz0110/timescaledb
+        repository: oortuniv/timescaledb
         readme-filepath: README.md
         short-description: ${{github.event.repository.description}}
